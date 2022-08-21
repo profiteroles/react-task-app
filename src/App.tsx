@@ -1,26 +1,43 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, {useCallback, useState} from 'react'
 import './App.css';
+import { Box, ChakraProvider, HStack } from '@chakra-ui/react'
+import { AppForm } from './components/form';
+import { TaskCard } from './components/task-card';
+import { Task } from './models/task';
+import WithSubnavigation from './components/nav-bar';
 
-function App() {
+export default function App() {
+
+    const onPinned = ()=>{
+    alert('Pinned to the top')
+  }
+
+  const [tasks, setTasks] = useState<Task[]>([])
+
+
+  const onTaskSubmit = useCallback((title:string)=>{
+      setTasks([...tasks,{id: crypto.randomUUID(),title:title,status:false}])
+    }, [tasks]
+  )
+
+  function onDone(task:Task){
+    const index = tasks.findIndex((x)=> x === task);
+    tasks[index].status = !tasks[index].status
+  }
+
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <ChakraProvider>
+      <WithSubnavigation/>
+      <AppForm onTaskSubmit={onTaskSubmit}/>
+      <HStack spacing={8}>
+        {tasks.map((x)=> 
+          <Box w={600}>
+            <TaskCard task={x} pinned={true} onPinned={onPinned} onDone={onDone(x)}/>
+          </Box>
+        )}            
+      </HStack>
+    </ChakraProvider>
   );
 }
 
-export default App;
