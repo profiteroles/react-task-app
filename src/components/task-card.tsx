@@ -1,13 +1,15 @@
-import { Avatar, Box, Flex, Heading, HStack, useColorModeValue ,Text, Spacer, Stack, Button} from "@chakra-ui/react"
-import React from "react"
+import { Avatar, Box, Flex, Heading, HStack, useColorModeValue , Spacer, Stack, Button} from "@chakra-ui/react"
+import React, { useCallback,useState } from "react"
 import { Task } from "../models/task"
-import {InfoIcon} from '@chakra-ui/icons';
+import {CheckIcon, CloseIcon, EditIcon, InfoIcon, } from '@chakra-ui/icons';
+import { render } from "react-dom";
 
 interface TaskCardProps{
  task:Task 
  pinned:boolean
  onPinned: ()=>void
- onDone:(task:Task)=>void
+ onDone:(id: string, status: boolean) => void
+
 }
 
 export function TaskCard({
@@ -18,10 +20,13 @@ export function TaskCard({
     children
 }:React.PropsWithChildren<TaskCardProps>) {
 
+    const [loading, setLoading] = useState(false)
 
-    function onSubmit() {
-        onDone(task)
-    }
+    const onSubmit = useCallback(()=> {
+        setLoading(true)
+        onDone(task.id, task.status)
+        setLoading(false)
+    },[onDone, task.id, task.status])
 
     return(
         <Flex
@@ -57,7 +62,8 @@ export function TaskCard({
                 <Button flex={1} variant="secondary" rounded={'full'} onClick={onPinned}>
                     {pinned ? 'Unpin' : 'Pin'}
                 </Button>
-                <Button flex={1} rounded={'full'} onClick={onSubmit}>
+                <Button flex={1} rounded={'full'} onClick={onSubmit} isLoading={loading}
+                leftIcon={task.status ? <EditIcon /> : <CheckIcon />}>
                    {task.status ? 'Undo' : 'Completed'}
                 </Button>
             </Stack>

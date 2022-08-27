@@ -1,5 +1,5 @@
-import { Button, Center, FormControl, FormLabel, HStack, Stack } from '@chakra-ui/react'
-import React, { useEffect, useMemo, useState } from 'react'
+import { Button, Center,  FormLabel, HStack, Stack } from '@chakra-ui/react'
+import React, { useEffect, useMemo } from 'react'
 import { Task } from '../models/task'
 import { Btn } from './button'
 import InputField from './input-field'
@@ -19,7 +19,7 @@ export function AppForm({onTaskSubmit}:AppFormProps) {
         formState: { errors, isSubmitting, isSubmitSuccessful }
         } = useForm<Task>();
 
-        const onSubmit = useMemo(()=> handleSubmit((value)=> onTaskSubmit(value.title)), [handleSubmit ])
+        const onSubmit = useMemo(()=> handleSubmit((value)=> onTaskSubmit(value.title)), [handleSubmit, onTaskSubmit])
 
         useEffect(() => {
             reset()
