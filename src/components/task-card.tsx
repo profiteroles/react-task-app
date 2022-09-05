@@ -8,7 +8,7 @@ interface TaskCardProps{
  isWatched:boolean
  onWatch: (id:string)=>void
  onDone:(id: string, status: boolean) => void
-
+onDelete:(id:string)=> void
 }
 
 export function TaskCard({
@@ -16,6 +16,7 @@ export function TaskCard({
     isWatched,
     onDone,
     onWatch,
+    onDelete,
     children
 }:React.PropsWithChildren<TaskCardProps>) {
 
@@ -28,6 +29,16 @@ export function TaskCard({
     },[onDone, task.id, task.status])
 
     const watchTask = useCallback(()=> onWatch(task.id), [onWatch, task.id])
+
+    const delelteTask=  useCallback(
+      () => {
+       setLoading(true)
+       onDelete(task.id)
+       setLoading(false) 
+      },
+      [onDelete, task],
+    )
+    
 
     return(
         <Flex
@@ -49,6 +60,7 @@ export function TaskCard({
             top='1'
             right='1'
             color='red'
+            onClick={delelteTask}
             ></DeleteIcon>
             <Box pos='absolute' top='-2'>
                 <HStack>
@@ -70,7 +82,7 @@ export function TaskCard({
             <Spacer />
             <Stack mt={8} direction={'row'} spacing={4} justifySelf={'end'}>
                 <Button flex={1} rounded={'xl'} variant="secondary" onClick={watchTask} >
-                {isWatched ? <ViewIcon/> : <ViewOffIcon/>}
+                {isWatched ? <ViewOffIcon/> : <ViewIcon/>}
                 </Button>
                 <Button flex={1} rounded={'xl'} onClick={onSubmit} isLoading={loading}
                 leftIcon={task.status ? <EditIcon /> : <CheckIcon />}>
