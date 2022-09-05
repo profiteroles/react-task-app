@@ -40,7 +40,6 @@ export function TasksBody(){
           if(updatedTask != null){
             updatedTask.status = false
           }
-          console.log(updatedTask)
         }
      
        const onDone = useCallback((id: string, status: boolean) =>
@@ -55,6 +54,12 @@ export function TasksBody(){
           return ( wathed[a.id] === wathed[b.id] ? a.title> b.title : wathed[b.id]) ? 1: -1
         }) 
     },[tasks, wathed] )
+
+    const onDelete = useCallback((id:string)=>{
+     const deletedTask = tasks.findIndex((x)=> x.id === id)
+     console.log(deletedTask)
+     tasks.splice(deletedTask,1)
+    },[tasks] )
     
     return(<>
     
@@ -66,10 +71,9 @@ export function TasksBody(){
             mt={6}
             overflow={'hidden'}
         >
-            
             {filteredCards.map((x)=> 
           <Box w={600}>
-            <TaskCard task={x} isWatched={true} onWatch={onWatch} onDone={onDone}/>
+            <TaskCard task={x} isWatched={wathed[x.id]} onWatch={onWatch} onDone={onDone} onDelete={onDelete}/>
           </Box>
         )}   
         </Flex>
