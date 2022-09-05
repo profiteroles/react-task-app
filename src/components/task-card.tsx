@@ -1,22 +1,21 @@
 import { Avatar, Box, Flex, Heading, HStack, useColorModeValue , Spacer, Stack, Button} from "@chakra-ui/react"
 import React, { useCallback,useState } from "react"
 import { Task } from "../models/task"
-import {CheckIcon, CloseIcon, EditIcon, InfoIcon, } from '@chakra-ui/icons';
-import { render } from "react-dom";
+import {CheckIcon,  DeleteIcon,  EditIcon,  StarIcon,  ViewIcon, ViewOffIcon, } from '@chakra-ui/icons';
 
 interface TaskCardProps{
  task:Task 
- pinned:boolean
- onPinned: ()=>void
+ isWatched:boolean
+ onWatch: (id:string)=>void
  onDone:(id: string, status: boolean) => void
 
 }
 
 export function TaskCard({
     task,
-    pinned,
-    onPinned,
+    isWatched,
     onDone,
+    onWatch,
     children
 }:React.PropsWithChildren<TaskCardProps>) {
 
@@ -27,6 +26,8 @@ export function TaskCard({
         onDone(task.id, task.status)
         setLoading(false)
     },[onDone, task.id, task.status])
+
+    const watchTask = useCallback(()=> onWatch(task.id), [onWatch, task.id])
 
     return(
         <Flex
@@ -42,15 +43,24 @@ export function TaskCard({
         minW='md'
         flex={1}
         flexDirection='column'
-        >{pinned && (<InfoIcon
+        >
+            <DeleteIcon
             pos='absolute'
             top='1'
             right='1'
             color='red'
-            ></InfoIcon>)}
+            ></DeleteIcon>
             <Box pos='absolute' top='-2'>
                 <HStack>
                     <Avatar name={task.title} size='md'/>
+                    {isWatched && (
+                    <StarIcon
+                        pos={'absolute'}
+                        bottom={'-1'}
+                        left={'-1'}
+                        color={'silver'}
+                    ></StarIcon>
+                )}
                     <Heading fontSize={'3xl'} fontFamily={'body'} mr={'6'} mt={5}>
                         {task.title}
                     </Heading>
@@ -59,12 +69,12 @@ export function TaskCard({
             {children}
             <Spacer />
             <Stack mt={8} direction={'row'} spacing={4} justifySelf={'end'}>
-                <Button flex={1} variant="secondary" rounded={'full'} onClick={onPinned}>
-                    {pinned ? 'Unpin' : 'Pin'}
+                <Button flex={1} rounded={'xl'} variant="secondary" onClick={watchTask} >
+                {isWatched ? <ViewIcon/> : <ViewOffIcon/>}
                 </Button>
-                <Button flex={1} rounded={'full'} onClick={onSubmit} isLoading={loading}
+                <Button flex={1} rounded={'xl'} onClick={onSubmit} isLoading={loading}
                 leftIcon={task.status ? <EditIcon /> : <CheckIcon />}>
-                   {task.status ? 'Undo' : 'Completed'}
+                   {task.status ? 'Undo' : 'Complete'}
                 </Button>
             </Stack>
         </Flex>

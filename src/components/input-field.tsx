@@ -1,9 +1,9 @@
 
-import { FormControl, FormErrorMessage, FormLabel, Input } from '@chakra-ui/react'
+import { FormControl, FormErrorMessage, Input } from '@chakra-ui/react'
 import { HTMLInputTypeAttribute } from 'react'
 import { FieldErrors, Path, RegisterOptions, UseFormRegister } from 'react-hook-form'
 
-export interface InputFieldProps<T>{
+export interface InputFieldProps<T extends Record<string, any>> {
     name:Path<T> & keyof T
     placeholder?:string
     register:UseFormRegister<T>
@@ -12,7 +12,7 @@ export interface InputFieldProps<T>{
     type?:HTMLInputTypeAttribute 
 }
 
-export function InputField<T>({
+export function InputField<T extends Record<string, any>> ({
     name,
     placeholder,
     register,
