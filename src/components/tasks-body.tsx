@@ -1,6 +1,6 @@
 import { Box, Flex } from '@chakra-ui/react'
-import React, { useCallback, useMemo, useState } from 'react'
-import {  useLocation } from 'react-router-dom'
+import React, { useCallback,  useMemo,  useState } from 'react'
+import { useLocation } from 'react-router-dom'
 import { Task } from '../models/task'
 import { AppForm } from './form'
 import { TaskCard } from './task-card'
@@ -8,17 +8,15 @@ import { TaskCard } from './task-card'
 
 export function TasksBody(){
     const location = useLocation()
-    const pinnedKey = `pinneed:${location.pathname}`
-    const [pinned, setPinned] = useState<{ [key: string]: boolean }>(
-        JSON.parse(localStorage.getItem(pinnedKey) || '{}'),
+    const watchedKey = `pinneed:${location.pathname}`
+    const [wathed, setWatched] = useState<{ [key: string]: boolean }>(
+        JSON.parse(localStorage.getItem(watchedKey) || '{}'),
     )
-
-    const onPinned = useCallback((id:string) =>{ const newState  ={ ...pinned, [id]: !pinned[id]}
-        localStorage.setItem(pinnedKey, JSON.stringify(newState))
-        setPinned(newState)
-        },[pinned, pinnedKey]
+    const onWatch = useCallback((id:string) =>{ const newState  ={ ...wathed, [id]: !wathed[id]}
+        localStorage.setItem(watchedKey, JSON.stringify(newState))
+        setWatched(newState)
+        },[wathed, watchedKey]
     )
-    
       const [tasks, setTasks] = useState<Task[]>([])
     
       const onTaskSubmit = useCallback((title:string)=>{
@@ -53,8 +51,10 @@ export function TasksBody(){
     )
 
     const filteredCards = useMemo(()=>{
-        return tasks.sort((a,b) => pinned[a.id]=== pinned[b.id] ? a.title > b.title : pinned[b.id]) ? 1:-1
-    } )
+        return tasks.sort((a,b) => {
+          return ( wathed[a.id] === wathed[b.id] ? a.title> b.title : wathed[b.id]) ? 1: -1
+        }) 
+    },[tasks, wathed] )
     
     return(<>
     
@@ -67,9 +67,9 @@ export function TasksBody(){
             overflow={'hidden'}
         >
             
-            {tasks.map((x)=> 
+            {filteredCards.map((x)=> 
           <Box w={600}>
-            <TaskCard task={x} pinned={true} onPinned={onPinned} onDone={onDone}/>
+            <TaskCard task={x} isWatched={true} onWatch={onWatch} onDone={onDone}/>
           </Box>
         )}   
         </Flex>
