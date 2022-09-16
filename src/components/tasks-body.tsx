@@ -12,35 +12,29 @@ export function TasksBody(){
     const [wathed, setWatched] = useState<{ [key: string]: boolean }>(
         JSON.parse(localStorage.getItem(watchedKey) || '{}'),
     )
+    
     const onWatch = useCallback((id:string) =>{ const newState  ={ ...wathed, [id]: !wathed[id]}
         localStorage.setItem(watchedKey, JSON.stringify(newState))
         setWatched(newState)
         },[wathed, watchedKey]
     )
+    
       const [tasks, setTasks] = useState<Task[]>([])
     
       const onTaskSubmit = useCallback((title:string)=>{
           setTasks([...tasks,{id: crypto.randomUUID(),title:title,status:false}])
         }, [tasks]
       )
-    
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-      const complete = (id:string)=>{
-      const updatedTask =tasks.find((x) => x.id ===id)
-        if(updatedTask != null){
-          updatedTask.status = true
-        }
-        console.log(updatedTask)
-    
-      } 
-    
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-      const uncomplete = (id:string)=>{
-        const updatedTask =tasks.find((x) => x.id ===id)
-          if(updatedTask != null){
-            updatedTask.status = false
-          }
-        }
+
+        const complete = useCallback((id: string )=>{
+            const updatedTask = tasks.find((x) => x.id === id)
+            if(updatedTask) updatedTask.status = true
+        },[tasks])
+
+        const uncomplete = useCallback((id: string )=>{
+          const updatedTask = tasks.find((x) => x.id === id)
+          if(updatedTask) updatedTask.status = false
+      },[tasks])
      
        const onDone = useCallback((id: string, status: boolean) =>
         status
@@ -49,11 +43,10 @@ export function TasksBody(){
         [complete, uncomplete],
     )
 
-    const filteredCards = useMemo(()=>{
-        return tasks.sort((a,b) => {
-          return ( wathed[a.id] === wathed[b.id] ? a.title> b.title : wathed[b.id]) ? 1: -1
-        }) 
-    },[tasks, wathed] )
+    const filteredCards = useMemo(()=>
+         tasks.sort((a,b) => 
+           (wathed[a.id] === wathed[b.id] ? a.title> b.title : wathed[b.id]) ? 1: -1)
+    ,[tasks, wathed, ])
 
     const onDelete = useCallback((id:string)=>{
      const deletedTask = tasks.findIndex((x)=> x.id === id)
@@ -76,6 +69,7 @@ export function TasksBody(){
             <TaskCard task={x} isWatched={wathed[x.id]} onWatch={onWatch} onDone={onDone} onDelete={onDelete}/>
           </Box>
         )}   
+         
         </Flex>
         </>
     )

@@ -1,5 +1,5 @@
 import { Avatar, Box, Flex, Heading, HStack, useColorModeValue , Spacer, Stack, Button} from "@chakra-ui/react"
-import React, { useCallback,useState } from "react"
+import React, { useCallback } from "react"
 import { Task } from "../models/task"
 import {CheckIcon,  DeleteIcon,  EditIcon,  StarIcon,  ViewIcon, ViewOffIcon, } from '@chakra-ui/icons';
 
@@ -20,24 +20,13 @@ export function TaskCard({
     children
 }:React.PropsWithChildren<TaskCardProps>) {
 
-    const [loading, setLoading] = useState(false)
+    // const [loading, setLoading] = useState(false)
 
-    const onSubmit = useCallback(()=> {
-        setLoading(true)
-        onDone(task.id, task.status)
-        setLoading(false)
-    },[onDone, task.id, task.status])
+    const onSubmit = useCallback(()=> onDone(task.id, task.status),[onDone, task.id, task.status])
 
     const watchTask = useCallback(()=> onWatch(task.id), [onWatch, task.id])
 
-    const delelteTask=  useCallback(
-      () => {
-       setLoading(true)
-       onDelete(task.id)
-       setLoading(false) 
-      },
-      [onDelete, task],
-    )
+    const delelteTask=  useCallback( () => onDelete(task.id),[onDelete, task])
     
 
     return(
@@ -84,7 +73,7 @@ export function TaskCard({
                 <Button flex={1} rounded={'xl'} variant="secondary" onClick={watchTask} >
                 {isWatched ? <ViewOffIcon/> : <ViewIcon/>}
                 </Button>
-                <Button flex={1} rounded={'xl'} onClick={onSubmit} isLoading={loading}
+                <Button flex={1} rounded={'xl'} onClick={onSubmit}
                 leftIcon={task.status ? <EditIcon /> : <CheckIcon />}>
                    {task.status ? 'Undo' : 'Complete'}
                 </Button>
